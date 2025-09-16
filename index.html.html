@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lampionnenoptocht Beoordelingssysteem</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: white;
+            color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .section {
+            display: none;
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-gold {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #333;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateX(5px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .participant {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 3px solid #28a745;
+        }
+
+        .criteria-group {
+            background: #e3f2fd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 3px solid #2196f3;
+        }
+
+        .criteria-score {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+        }
+
+        .criteria-score label {
+            min-width: 150px;
+            margin-bottom: 0;
+        }
+
+        .criteria-score input {
+            width: 80px;
+        }
+
+        .qr-code {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .results-table th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .results-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .winner-card {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            border: 3px solid #ffc107;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .winner-card::before {
+            content: '🏆';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 4em;
+            opacity: 0.2;
+        }
+
+        .winner-card h3 {
+            color: #333;
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .presentation-mode {
+            background: #000;
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2000;
+            padding: 50px;
+            text-align: center;
+            overflow-y: auto;
+        }
+
+        .presentation-winner {
+            margin: 40px 0;
+            padding: 40px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #333;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
+        }
+
+        .login-form {
+            max-width: 400px;
+            margin: 50px auto;
+            background: rgba(255,255,255,0.95);
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .prize-selector {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .prize-selector select {
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .nav {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav-btn {
+                width: 200px;
+            }
+
+            .form-row {
+                flex-direction: column;
+            }
+
+            .criteria-score {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .criteria-score input {
+                width: 100%;
+            }
+        }
+
+        .criteria-item {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .criteria-details {
+            flex: 1;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div id="loginScreen" class="login-form">
+        <h2 style="margin-bottom: 30px; color: #667eea;">🏮 Lampionnenoptocht</h2>
+        <div class="form-group">
+            <label>Gebruikerstype:</label>
+            <select id="userType">
+                <option value="admin">Administrator</option>
+                <option value="jury">Jurylid</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Wachtwoord:</label>
+            <input type="password" id="password" placeholder="Voer wachtwoord in">
+        </div>
+        <button class="btn" onclick="login()">Inloggen</button>
+        <div id="loginError" class="alert alert-error" style="display: none; margin-top: 20px;"></div>
+    </div>
+
+    <div id="mainApp" style="display: none;">
+        <div class="container">
+            <div class="header">
+                <h1>🏮 Lampionnenoptocht Beoordelingssysteem</h1>
+                <p>Beheer categorieën, criteria, deelnemers en beoordelingen</p>
+            </div>
+
+            <div class="nav" id="navigation"></div>
+
+            <!-- Admin Categorieën Sectie -->
+            <div id="categories" class="section">
+                <h2>Categorieën Beheren</h2>
+                <div class="form-group">
+                    <label>Nieuwe Categorie:</label>
+                    <input type="text" id="newCategory" placeholder="Bijv. Kinderen 6-8 jaar">
+                </div>
+                <button class="btn" onclick="addCategory()">Categorie Toevoegen</button>
+                <div id="categoriesList"></div>
+            </div>
+
+            <!-- Beoordelingscriteria Sectie -->
+            <div id="criteria" class="section">
+                <h2>Beoordelingscriteria Beheren</h2>
+                <div class="form-group">
+                    <label>Selecteer Categorie:</label>
+                    <select id="criteriaCategory" onchange="loadCriteria()"></select>
+                </div>
+                
+                <div id="criteriaForm" style="display: none;">
+                    <h3>Nieuw Criterium Toevoegen</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Criterium Naam:</label>
+                            <input type="text" id="criteriumName" placeholder="Bijv. Creativiteit">
+                        </div>
+                        <div class="form-group">
+                            <label>Gewicht (%):</label>
+                            <input type="number" id="criteriumWeight" min="1" max="100" placeholder="25">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Beschrijving:</label>
+                        <textarea id="criteriumDescription" placeholder="Uitleg van dit beoordelingscriterium"></textarea>
+                    </div>
+                    <button class="btn" onclick="addCriterium()">Criterium Toevoegen</button>
+                </div>
+
+                <div id="criteriaList"></div>
+            </div>
+
+            <!-- Admin Deelnemers Sectie -->
+            <div id="participants" class="section">
+                <h2>Deelnemers Beheren</h2>
+                <div class="form-group">
+                    <label>Selecteer Categorie:</label>
+                    <select id="participantCategory"></select>
+                </div>
+                <div class="form-group">
+                    <label>Naam Deelnemer:</label>
+                    <input type="text" id="participantName" placeholder="Naam van deelnemer">
+                </div>
+                <div class="form-group">
+                    <label>Beschrijving (optioneel):</label>
+                    <textarea id="participantDescription" placeholder="Beschrijving van de lampion"></textarea>
+                </div>
+                <button class="btn" onclick="addParticipant()">Deelnemer Toevoegen</button>
+                <div id="participantsList"></div>
+            </div>
+
+            <!-- QR Codes Sectie -->
+            <div id="qrcodes" class="section">
+                <h2>QR Codes voor Jury</h2>
+                <p>Deel deze QR codes met juryleden voor toegang tot beoordeling:</p>
+                
+                <!-- Debug informatie -->
+                <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <h4>📋 Instructies:</h4>
+                    <ul>
+                        <li>Zorg dat je website toegankelijk is via internet (niet alleen localhost)</li>
+                        <li>QR codes werken het beste met HTTPS</li>
+                        <li>Test de links eerst zelf voordat je ze uitdeelt</li>
+                        <li>Jury kan ook de link handmatig invoeren als QR scannen niet werkt</li>
+                    </ul>
+                    <button class="btn btn-secondary" onclick="testQRGeneration()">🔧 Test QR Generatie</button>
+                    <button class="btn btn-secondary" onclick="showDebugInfo()">📊 Debug Info</button>
+                </div>
+
+                <div id="qrCodesList"></div>
+                
+                <!-- Handmatige links als backup -->
+                <div id="manualLinks" style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                    <h4>🔗 Handmatige Links (backup voor als QR niet werkt):</h4>
+                    <div id="manualLinksList"></div>
+                </div>
+            </div>
+
+            <!-- Jury Beoordeling Sectie -->
+            <div id="judging" class="section">
+                <h2>Beoordeling</h2>
+                <div class="form-group">
+                    <label>Selecteer Categorie:</label>
+                    <select id="judgingCategory" onchange="loadParticipantsForJudging()"></select>
+                </div>
+                <div id="judgingProgress" style="display: none;">
+                    <h4>Voortgang</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <p id="progressText">0 van 0 deelnemers beoordeeld</p>
+                </div>
+                <div id="judgingParticipants"></div>
+                <button class="btn btn-success" onclick="submitScores()" style="display: none;" id="submitScoresBtn">Scores Opslaan</button>
+            </div>
+
+            <!-- Resultaten Sectie -->
+            <div id="results" class="section">
+                <h2>Resultaten</h2>
+                <div class="form-group">
+                    <label>Selecteer Categorie:</label>
+                    <select id="resultsCategory" onchange="showResults()"></select>
+                </div>
+                <button class="btn btn-success" onclick="exportToExcel()">Exporteer naar Excel</button>
+                <div id="resultsDisplay"></div>
+            </div>
+
+            <!-- Prijsuitreiking Sectie -->
+            <div id="awards" class="section">
+                <h2>🏆 Prijsuitreiking</h2>
+                <div class="form-group">
+                    <label>Selecteer Categorie:</label>
+                    <select id="awardsCategory" onchange="loadAwards()"></select>
+                </div>
+                
+                <div id="awardAssignment" style="display: none;">
+                    <h3>Prijzen Toekennen</h3>
+                    <div id="prizeAssignments"></div>
+                    <button class="btn btn-success" onclick="saveAwards()">Prijzen Opslaan</button>
+                </div>
+
+                <div id="winnersDisplay"></div>
+                
+                <button class="btn btn-gold" onclick="startPresentation()" id="presentationBtn" style="display: none;">
+                    🎉 Start Prijsuitreiking Presentatie
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Presentatie Mode -->
+    <div id="presentationMode" class="presentation-mode" style="display: none;">
+        <div style="position: absolute; top: 20px; right: 20px;">
+            <button class="btn btn-danger" onclick="endPresentation()">Beëindig Presentatie</button>
+        </div>
+        <h1 style="font-size: 3em; margin-bottom: 50px;">🏆 Prijsuitreiking Lampionnenoptocht</h1>
+        <div id="presentationContent"></div>
+    </div>
+
+    <!-- Modal voor QR Code -->
+    <div id="qrModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3>QR Code voor Jurering</h3>
+            <div id="qrCodeDisplay"></div>
+            <p>Scan deze code om te beginnen met jureren</p>
+        </div>
+    </div>
+
+    <script>
+        // QR Code generator functie (inline, geen externe library nodig)
+        function generateQRCode(text, size = 200) {
+            // Gebruik Google Charts API voor QR codes (betrouwbaarder)
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(text)}`;
+            return qrUrl;
+        }
+
+        // Alternatieve QR generator (backup)
+        function generateQRCodeBackup(text, size = 200) {
+            // Chart.googleapis.com als backup
+            return `https://chart.googleapis.com/chart?chs=${size}x${size}&cht=qr&chl=${encodeURIComponent(text)}`;
+        }
+
+        // Test QR code functionaliteit
+        function testQRGeneration() {
+            const testText = "Test QR Code";
+            const testUrl = generateQRCode(testText);
+            console.log("Test QR URL:", testUrl);
+            
+            // Test of de afbeelding laadt
+            const testImg = new Image();
+            testImg.onload = function() {
+                console.log("✅ QR Code generatie werkt!");
+            };
+            testImg.onerror = function() {
+                console.log("❌ QR Code generatie mislukt, probeer backup methode");
+            };
+            testImg.src = testUrl;
+        }
+    </script>
+    <script>
+        // Data opslag (in productie zou dit een database zijn)
+        let appData = {
+            categories: [],
+            criteria: {},
+            participants: {},
+            scores: {},
+            awards: {},
+            currentUser: null,
+            userType: null
+        };
+
+        // Wachtwoorden (in productie zou dit veilig opgeslagen worden)
+        const passwords = {
+            admin: 'admin123',
+            jury: 'jury123'
+        };
+
+        // Standaard prijzen
+        const defaultPrizes = [
+            { position: 1, name: "1e Plaats", emoji: "🥇" },
+            { position: 2, name: "2e Plaats", emoji: "🥈" },
+            { position: 3, name: "3e Plaats", emoji: "🥉" },
+            { position: 4, name: "Publieksprijs", emoji: "👏" },
+            { position: 5, name: "Originaliteitsprijs", emoji: "🌟" },
+            { position: 6, name: "Beste Techniek", emoji: "⚙️" }
+        ];
+
+        // Login functie
+        function login() {
+            const userType = document.getElementById('userType').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('loginError');
+
+            if (passwords[userType] === password) {
+                appData.currentUser = userType;
+                appData.userType = userType;
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+                setupNavigation();
+                loadData();
+                showSection('categories');
+            } else {
+                errorDiv.textContent = 'Onjuist wachtwoord!';
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        // Navigatie setup
+        function setupNavigation() {
+            const nav = document.getElementById('navigation');
+            nav.innerHTML = '';
+
+            if (appData.userType === 'admin') {
+                nav.innerHTML = `
+                    <button class="nav-btn" onclick="showSection('categories')">Categorieën</button>
+                    <button class="nav-btn" onclick="showSection('criteria')">Criteria</button>
+                    <button class="nav-btn" onclick="showSection('participants')">Deelnemers</button>
+                    <button class="nav-btn" onclick="showSection('qrcodes')">QR Codes</button>
+                    <button class="nav-btn" onclick="showSection('results')">Resultaten</button>
+                    <button class="nav-btn" onclick="showSection('awards')">🏆 Prijzen</button>
+                `;
+            } else {
+                nav.innerHTML = `
+                    <button class="nav-btn" onclick="showSection('judging')">Beoordelen</button>
+                `;
+            }
+        }
+
+        // Sectie weergave
+        function showSection(sectionName) {
+            // Verberg alle secties
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Verwijder active class van alle nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Toon geselecteerde sectie
+            document.getElementById(sectionName).classList.add('active');
+            
+            // Activeer juiste nav button
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+
+            // Laad specifieke data
+            if (['participants', 'judging', 'results', 'criteria', 'awards'].includes(sectionName)) {
+                updateCategorySelects();
+            }
+            if (sectionName === 'qrcodes') {
+                generateQRCodes();
+            }
+        }
+
+        // Categorie toevoegen
+        function addCategory() {
+            const categoryName = document.getElementById('newCategory').value.trim();
+            if (categoryName && !appData.categories.includes(categoryName)) {
+                appData.categories.push(categoryName);
+                appData.participants[categoryName] = [];
+                appData.scores[categoryName] = {};
+                appData.criteria[categoryName] = [];
+                appData.awards[categoryName] = {};
+                document.getElementById('newCategory').value = '';
+                displayCategories();
+                updateCategorySelects();
+                saveData();
+            }
+        }
+
+        // Categorieën weergeven
+        function displayCategories() {
+            const container = document.getElementById('categoriesList');
+            container.innerHTML = '';
+
+            appData.categories.forEach((category, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <h3>${category}</h3>
+                        <button class="btn btn-danger" onclick="removeCategory(${index})">Verwijderen</button>
+                    </div>
+                    <p><strong>Deelnemers:</strong> ${appData.participants[category]?.length || 0}</p>
+                    <p><strong>Criteria:</strong> ${appData.criteria[category]?.length || 0}</p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Categorie verwijderen
+        function removeCategory(index) {
+            const category = appData.categories[index];
+            if (confirm(`Weet je zeker dat je de categorie "${category}" wilt verwijderen?`)) {
+                appData.categories.splice(index, 1);
+                delete appData.participants[category];
+                delete appData.scores[category];
+                delete appData.criteria[category];
+                delete appData.awards[category];
+                displayCategories();
+                updateCategorySelects();
+                saveData();
+            }
+        }
+
+        // Criterium toevoegen
+        function addCriterium() {
+            const category = document.getElementById('criteriaCategory').value;
+            const name = document.getElementById('criteriumName').value.trim();
+            const weight = parseInt(document.getElementById('criteriumWeight').value);
+            const description = document.getElementById('criteriumDescription').value.trim();
+
+            if (category && name && weight) {
+                const criterium = {
+                    id: Date.now(),
+                    name: name,
+                    weight: weight,
+                    description: description
+                };
+
+                if (!appData.criteria[category]) {
+                    appData.criteria[category] = [];
+                }
+
+                appData.criteria[category].push(criterium);
+
+                document.getElementById('criteriumName').value = '';
+                document.getElementById('criteriumWeight').value = '';
+                document.getElementById('criteriumDescription').value = '';
+                
+                loadCriteria();
+                saveData();
+            }
+        }
+
+        // Criteria laden
+        function loadCriteria() {
+            const category = document.getElementById('criteriaCategory').value;
+            const form = document.getElementById('criteriaForm');
+            const container = document.getElementById('criteriaList');
+
+            if (category) {
+                form.style.display = 'block';
+                container.innerHTML = '';
+
+                const criteria = appData.criteria[category] || [];
+                const totalWeight = criteria.reduce((sum, c) => sum + c.weight, 0);
+
+                if (criteria.length > 0) {
+                    const headerDiv = document.createElement('div');
+                    headerDiv.innerHTML = `
+                        <h3>Huidige Criteria voor ${category}</h3>
+                        <p><strong>Totaal gewicht:</strong> ${totalWeight}% ${totalWeight !== 100 ? '⚠️ Moet 100% zijn' : '✅'}</p>
+                    `;
+                    container.appendChild(headerDiv);
+
+                    criteria.forEach(criterium => {
+                        const criteriumDiv = document.createElement('div');
+                        criteriumDiv.className = 'criteria-item';
+                        criteriumDiv.innerHTML = `
+                            <div class="criteria-details">
+                                <h4>${criterium.name} (${criterium.weight}%)</h4>
+                                <p>${criterium.description}</p>
+                            </div>
+                            <button class="btn btn-danger" onclick="removeCriterium('${category}', ${criterium.id})">Verwijderen</button>
+                        `;
+                        container.appendChild(criteriumDiv);
+                    });
+                }
+            } else {
+                form.style.display = 'none';
+                container.innerHTML = '';
+            }
+        }
+
+        // Criterium verwijderen
+        function removeCriterium(category, criteriumId) {
+            if (confirm('Weet je zeker dat je dit criterium wilt verwijderen?')) {
+                appData.criteria[category] = appData.criteria[category].filter(c => c.id !== criteriumId);
+                loadCriteria();
+                saveData();
+            }
+        }
+
+        // Deelnemer toevoegen
+        function addParticipant() {
+            const category = document.getElementById('participantCategory').value;
+            const name = document.getElementById('participantName').value.trim();
+            const description = document.getElementById('participantDescription').value.trim();
+
+            if (category && name) {
+                const participant = {
+                    id: Date.now(),
+                    name: name,
+                    description: description,
+                    category: category
+                };
+
+                appData.participants[category].push(participant);
+                appData.scores[category][participant.id] = [];
+
+                document.getElementById('participantName').value = '';
+                document.getElementById('participantDescription').value = '';
+                displayParticipants();
+                saveData();
+            }
+        }
+
+        // Deelnemers weergeven
+        function displayParticipants() {
+            const container = document.getElementById('participantsList');
+            container.innerHTML = '';
+
+            appData.categories.forEach(category => {
+                if (appData.participants[category] && appData.participants[category].length > 0) {
+                    const categoryDiv = document.createElement('div');
+                    categoryDiv.innerHTML = `<h3>${category}</h3>`;
+
+                    appData.participants[category].forEach(participant => {
+                        const participantDiv = document.createElement('div');
+                        participantDiv.className = 'participant';
+                        participantDiv.innerHTML = `
+                            <strong>${participant.name}</strong>
+                            ${participant.description ? `<p>${participant.description}</p>` : ''}
+                            <button class="btn btn-secondary" onclick="removeParticipant('${category}', ${participant.id})">Verwijderen</button>
+                        `;
+                        categoryDiv.appendChild(participantDiv);
+                    });
+
+                    container.appendChild(categoryDiv);
+                }
+            });
+        }
+
+        // Deelnemer verwijderen
+        function removeParticipant(category, participantId) {
+            if (confirm('Weet je zeker dat je deze deelnemer wilt verwijderen?')) {
+                appData.participants[category] = appData.participants[category].filter(p => p.id !== participantId);
+                delete appData.scores[category][participantId];
+                displayParticipants();
+                saveData();
+            }
+        }
+
+        // Category selects bijwerken
+        function updateCategorySelects() {
+            const selects = ['participantCategory', 'judgingCategory', 'resultsCategory', 'criteriaCategory', 'awardsCategory'];
+            
+            selects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                if (select) {
+                    select.innerHTML = '<option value="">Selecteer categorie...</option>';
+                    appData.categories.forEach(category => {
+                        select.innerHTML += `<option value="${category}">${category}</option>`;
+                    });
+                }
+            });
+        }
+
+        // QR Codes genereren
+        function generateQRCodes() {
+            const container = document.getElementById('qrCodesList');
+            const manualContainer = document.getElementById('manualLinksList');
+            container.innerHTML = '';
+            manualContainer.innerHTML = '';
+
+            if (appData.categories.length === 0) {
+                container.innerHTML = '<p>⚠️ Voeg eerst categorieën toe om QR codes te genereren.</p>';
+                return;
+            }
+
+            appData.categories.forEach(category => {
+                // QR Code sectie
+                const qrDiv = document.createElement('div');
+                qrDiv.className = 'qr-code';
+                
+                // Creëer de URL voor jury toegang
+                const baseUrl = window.location.href.split('?')[0]; // Verwijder bestaande parameters
+                const juryUrl = `${baseUrl}?jury=${encodeURIComponent(category)}`;
+                
+                console.log('QR URL voor', category, ':', juryUrl); // Debug info
+                
+                // Gebruik Google QR API (betrouwbaarder dan canvas)
+                const qrImageUrl = generateQRCode(juryUrl, 250);
+                
+                qrDiv.innerHTML = `
+                    <h4>📱 ${category}</h4>
+                    <p>QR Code voor jurering van deze categorie</p>
+                    <img src="${qrImageUrl}" alt="QR Code voor ${category}" style="max-width: 250px; margin: 20px 0; border: 1px solid #ddd;" 
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div style="display: none; background: #f8d7da; padding: 15px; border-radius: 5px; color: #721c24;">
+                        ❌ QR Code kon niet geladen worden. Gebruik de handmatige link hieronder.
+                    </div>
+                    <p style="font-size: 12px; color: #666; word-break: break-all; background: #f8f9fa; padding: 10px; border-radius: 5px;">
+                        <strong>Jury URL:</strong> ${juryUrl}
+                    </p>
+                    <div style="margin-top: 15px;">
+                        <button class="btn" onclick="downloadQRImage('${qrImageUrl}', '${category}')">📥 Download QR</button>
+                        <button class="btn btn-secondary" onclick="copyQRUrl('${juryUrl}')">📋 Kopieer Link</button>
+                        <button class="btn btn-secondary" onclick="testQRUrl('${juryUrl}')">🔗 Test Link</button>
+                    </div>
+                `;
+
+                container.appendChild(qrDiv);
+
+                // Handmatige link sectie
+                const linkDiv = document.createElement('div');
+                linkDiv.style.cssText = 'margin: 10px 0; padding: 15px; background: white; border-radius: 5px; border-left: 4px solid #667eea;';
+                linkDiv.innerHTML = `
+                    <strong>${category}:</strong>
+                    <br>
+                    <a href="${juryUrl}" target="_blank" style="color: #667eea; word-break: break-all;">${juryUrl}</a>
+                    <button class="btn btn-secondary" onclick="copyQRUrl('${juryUrl}')" style="margin-left: 10px; padding: 5px 10px; font-size: 12px;">Kopieer</button>
+                `;
+                manualContainer.appendChild(linkDiv);
+            });
+        }
+
+        // Debug informatie tonen
+        function showDebugInfo() {
+            const debugInfo = `
+🌐 Website URL: ${window.location.href}
+📱 User Agent: ${navigator.userAgent}
+🔒 Protocol: ${window.location.protocol}
+🏠 Hostname: ${window.location.hostname}
+📊 Categorieën: ${appData.categories.length}
+💾 Data opgeslagen: ${localStorage.getItem('lampionnenData') ? 'Ja' : 'Nee'}
+
+🔧 Mogelijke problemen:
+- Localhost URLs werken niet op andere apparaten
+- HTTP kan problemen geven, gebruik HTTPS
+- Firewall kan QR API's blokkeren
+- Oude browsers ondersteunen misschien geen QR codes
+
+💡 Oplossingen:
+- Test eerst met handmatige links
+- Gebruik een echte domeinnaam (niet localhost)
+- Zorg voor stabiele internetverbinding
+- Gebruik de 'Test Link' knoppen
+            `;
+            
+            alert(debugInfo);
+            console.log("=== DEBUG INFO ===");
+            console.log(debugInfo);
+        }
+
+        // QR Code downloaden (nieuwe versie)
+        function downloadQRImage(imageUrl, category) {
+            const link = document.createElement('a');
+            link.href = imageUrl;
+            link.download = `qr-${category.replace(/\s+/g, '_')}.png`;
+            link.target = '_blank';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // URL kopiëren naar klembord
+        function copyQRUrl(url) {
+            navigator.clipboard.writeText(url).then(function() {
+                alert('Link gekopieerd naar klembord!');
+            }, function(err) {
+                // Fallback voor oudere browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = url;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('Link gekopieerd naar klembord!');
+            });
+        }
+
+        // Test QR URL
+        function testQRUrl(url) {
+            window.open(url, '_blank');
+        }
+
+        // Deelnemers laden voor jurering
+        function loadParticipantsForJudging() {
+            const category = document.getElementById('judgingCategory').value;
+            const container = document.getElementById('judgingParticipants');
+            const submitBtn = document.getElementById('submitScoresBtn');
+            const progressDiv = document.getElementById('judgingProgress');
+
+            container.innerHTML = '';
+
+            if (category && appData.participants[category]) {
+                const criteria = appData.criteria[category] || [];
+                
+                if (criteria.length === 0) {
+                    container.innerHTML = '<p style="color: #dc3545;">⚠️ Geen beoordelingscriteria ingesteld voor deze categorie. Vraag de admin om criteria toe te voegen.</p>';
+                    submitBtn.style.display = 'none';
+                    progressDiv.style.display = 'none';
+                    return;
+                }
+
+                // Toon voortgang
+                progressDiv.style.display = 'block';
+                updateJudgingProgress(category);
+
+                appData.participants[category].forEach(participant => {
+                    const participantDiv = document.createElement('div');
+                    participantDiv.className = 'participant';
+                    participantDiv.innerHTML = `
+                        <h4>${participant.name}</h4>
+                        ${participant.description ? `<p>${participant.description}</p>` : ''}
+                        <div class="criteria-group">
+                            <h5>Beoordelingscriteria:</h5>
+                            ${criteria.map(criterium => `
+                                <div class="criteria-score">
+                                    <label>${criterium.name} (${criterium.weight}%):</label>
+                                    <input type="number" min="1" max="10" id="score_${participant.id}_${criterium.id}" placeholder="1-10">
+                                    <small>${criterium.description}</small>
+                                </div>
+                            `).join('')}
+                            <div class="criteria-score">
+                                <label>Algemene opmerking:</label>
+                                <input type="text" id="comment_${participant.id}" placeholder="Optionele opmerking">
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(participantDiv);
+                });
+
+                submitBtn.style.display = 'block';
+            } else {
+                submitBtn.style.display = 'none';
+                progressDiv.style.display = 'none';
+            }
+        }
+
+        // Jurering voortgang bijwerken
+        function updateJudgingProgress(category) {
+            const totalParticipants = appData.participants[category].length;
+            const juryId = `jury_${appData.currentUser}_${Date.now()}`;
+            
+            // Tel hoeveel deelnemers al scores hebben van huidige jury
+            let scoredParticipants = 0;
+            appData.participants[category].forEach(participant => {
+                const scores = appData.scores[category][participant.id] || [];
+                if (scores.some(score => score.juryId.startsWith(`jury_${appData.currentUser}_`))) {
+                    scoredParticipants++;
+                }
+            });
+
+            const progressPercent = totalParticipants > 0 ? (scoredParticipants / totalParticipants) * 100 : 0;
+            
+            document.getElementById('progressFill').style.width = progressPercent + '%';
+            document.getElementById('progressText').textContent = `${scoredParticipants} van ${totalParticipants} deelnemers beoordeeld`;
+        }
+
+        // Scores opslaan
+        function submitScores() {
+            const category = document.getElementById('judgingCategory').value;
+            const juryId = `jury_${appData.currentUser}_${Date.now()}`;
+            const criteria = appData.criteria[category] || [];
+            let scoresSubmitted = 0;
+
+            if (appData.participants[category]) {
+                appData.participants[category].forEach(participant => {
+                    const scores = {};
+                    let hasScores = false;
+
+                    // Verzamel scores per criterium
+                    criteria.forEach(criterium => {
+                        const scoreInput = document.getElementById(`score_${participant.id}_${criterium.id}`);
+                        if (scoreInput && scoreInput.value) {
+                            scores[criterium.id] = parseInt(scoreInput.value);
+                            hasScores = true;
+                        }
+                    });
+
+                    if (hasScores) {
+                        const commentInput = document.getElementById(`comment_${participant.id}`);
+                        
+                        const scoreEntry = {
+                            juryId: juryId,
+                            scores: scores,
+                            comment: commentInput ? commentInput.value || '' : '',
+                            timestamp: new Date().toISOString()
+                        };
+
+                        appData.scores[category][participant.id].push(scoreEntry);
+                        scoresSubmitted++;
+                    }
+                });
+            }
+
+            if (scoresSubmitted > 0) {
+                alert(`${scoresSubmitted} deelnemers succesvol beoordeeld!`);
+                loadParticipantsForJudging(); // Reset form
+                saveData();
+            } else {
+                alert('Geen scores ingevuld!');
+            }
+        }
+
+        // Resultaten tonen
+        function showResults() {
+            const category = document.getElementById('resultsCategory').value;
+            const container = document.getElementById('resultsDisplay');
+
+            container.innerHTML = '';
+
+            if (category && appData.participants[category]) {
+                const results = calculateResults(category);
+                
+                const table = document.createElement('table');
+                table.className = 'results-table';
+                table.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>Positie</th>
+                            <th>Deelnemer</th>
+                            <th>Totaal Score</th>
+                            <th>Aantal Jury</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                `;
+
+                const tbody = table.querySelector('tbody');
+                results.forEach((result, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><strong>${index + 1}</strong></td>
+                        <td>${result.name}</td>
+                        <td><strong>${result.totalScore.toFixed(2)}</strong></td>
+                        <td>${result.juryCount}</td>
+                        <td>${Object.entries(result.criteriaAverages).map(([name, score]) => 
+                            `${name}: ${score.toFixed(1)}`).join('<br>')}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+
+                container.appendChild(table);
+            }
+        }
+
+        // Resultaten berekenen met gewogen scores
+        function calculateResults(category) {
+            const participants = appData.participants[category];
+            const criteria = appData.criteria[category] || [];
+            const results = [];
+
+            participants.forEach(participant => {
+                const scores = appData.scores[category][participant.id] || [];
+                
+                if (scores.length === 0) {
+                    results.push({
+                        id: participant.id,
+                        name: participant.name,
+                        description: participant.description,
+                        totalScore: 0,
+                        juryCount: 0,
+                        criteriaAverages: {}
+                    });
+                    return;
+                }
+
+                // Bereken gemiddelde per criterium
+                const criteriaAverages = {};
+                criteria.forEach(criterium => {
+                    const criteriumScores = scores
+                        .filter(score => score.scores[criterium.id])
+                        .map(score => score.scores[criterium.id]);
+                    
+                    criteriaAverages[criterium.name] = criteriumScores.length > 0
+                        ? criteriumScores.reduce((a, b) => a + b, 0) / criteriumScores.length
+                        : 0;
+                });
+
+                // Bereken gewogen totaalscore
+                let totalScore = 0;
+                criteria.forEach(criterium => {
+                    const average = criteriaAverages[criterium.name];
+                    const weight = criterium.weight / 100;
+                    totalScore += average * weight;
+                });
+
+                results.push({
+                    id: participant.id,
+                    name: participant.name,
+                    description: participant.description,
+                    totalScore: totalScore,
+                    juryCount: scores.length,
+                    criteriaAverages: criteriaAverages
+                });
+            });
+
+            // Sorteer op totaalscore (hoogste eerst)
+            results.sort((a, b) => b.totalScore - a.totalScore);
+            return results;
+        }
+
+        // Awards laden
+        function loadAwards() {
+            const category = document.getElementById('awardsCategory').value;
+            const assignmentDiv = document.getElementById('awardAssignment');
+            const winnersDiv = document.getElementById('winnersDisplay');
+            const presentationBtn = document.getElementById('presentationBtn');
+
+            if (category) {
+                assignmentDiv.style.display = 'block';
+                
+                const results = calculateResults(category);
+                const container = document.getElementById('prizeAssignments');
+                container.innerHTML = '';
+
+                defaultPrizes.forEach(prize => {
+                    const prizeDiv = document.createElement('div');
+                    prizeDiv.className = 'prize-selector';
+                    prizeDiv.innerHTML = `
+                        <label>${prize.emoji} ${prize.name}:</label>
+                        <select id="prize_${category}_${prize.position}">
+                            <option value="">Geen winnaar</option>
+                            ${results.map(result => 
+                                `<option value="${result.id}">${result.name} (Score: ${result.totalScore.toFixed(2)})</option>`
+                            ).join('')}
+                        </select>
+                    `;
+                    container.appendChild(prizeDiv);
+                });
+
+                // Laad bestaande awards
+                const existingAwards = appData.awards[category] || {};
+                Object.entries(existingAwards).forEach(([prizePosition, winnerId]) => {
+                    const select = document.getElementById(`prize_${category}_${prizePosition}`);
+                    if (select) {
+                        select.value = winnerId;
+                    }
+                });
+
+                showWinners(category);
+                presentationBtn.style.display = 'block';
+            } else {
+                assignmentDiv.style.display = 'none';
+                winnersDiv.innerHTML = '';
+                presentationBtn.style.display = 'none';
+            }
+        }
+
+        // Awards opslaan
+        function saveAwards() {
+            const category = document.getElementById('awardsCategory').value;
+            if (!category) return;
+
+            const awards = {};
+            defaultPrizes.forEach(prize => {
+                const select = document.getElementById(`prize_${category}_${prize.position}`);
+                if (select && select.value) {
+                    awards[prize.position] = select.value;
+                }
+            });
+
+            appData.awards[category] = awards;
+            saveData();
+            showWinners(category);
+            alert('Prijzen succesvol opgeslagen!');
+        }
+
+        // Winnaars tonen
+        function showWinners(category) {
+            const container = document.getElementById('winnersDisplay');
+            container.innerHTML = '';
+
+            const awards = appData.awards[category] || {};
+            const participants = appData.participants[category] || [];
+
+            if (Object.keys(awards).length === 0) {
+                container.innerHTML = '<p>Nog geen prijzen toegekend.</p>';
+                return;
+            }
+
+            container.innerHTML = '<h3>🏆 Winnaars</h3>';
+
+            defaultPrizes.forEach(prize => {
+                const winnerId = awards[prize.position];
+                if (winnerId) {
+                    const winner = participants.find(p => p.id == winnerId);
+                    if (winner) {
+                        const winnerDiv = document.createElement('div');
+                        winnerDiv.className = 'winner-card';
+                        winnerDiv.innerHTML = `
+                            <h3>${prize.emoji} ${prize.name}</h3>
+                            <h2>${winner.name}</h2>
+                            ${winner.description ? `<p>${winner.description}</p>` : ''}
+                        `;
+                        container.appendChild(winnerDiv);
+                    }
+                }
+            });
+        }
+
+        // Presentatie starten
+        function startPresentation() {
+            const category = document.getElementById('awardsCategory').value;
+            if (!category) return;
+
+            const awards = appData.awards[category] || {};
+            const participants = appData.participants[category] || [];
+            const presentationDiv = document.getElementById('presentationMode');
+            const contentDiv = document.getElementById('presentationContent');
+
+            contentDiv.innerHTML = `<h2 style="margin-bottom: 50px; color: #ffd700;">Categorie: ${category}</h2>`;
+
+            // Toon winnaars in omgekeerde volgorde (3e, 2e, 1e)
+            const sortedPrizes = [...defaultPrizes].reverse();
+            
+            sortedPrizes.forEach(prize => {
+                const winnerId = awards[prize.position];
+                if (winnerId) {
+                    const winner = participants.find(p => p.id == winnerId);
+                    if (winner) {
+                        const winnerDiv = document.createElement('div');
+                        winnerDiv.className = 'presentation-winner';
+                        winnerDiv.innerHTML = `
+                            <h1 style="font-size: 4em; margin-bottom: 20px;">${prize.emoji}</h1>
+                            <h2 style="font-size: 2.5em; margin-bottom: 10px;">${prize.name}</h2>
+                            <h1 style="font-size: 3em; margin-bottom: 20px; color: #333;">${winner.name}</h1>
+                            ${winner.description ? `<p style="font-size: 1.5em; color: #666;">${winner.description}</p>` : ''}
+                        `;
+                        contentDiv.appendChild(winnerDiv);
+                    }
+                }
+            });
+
+            presentationDiv.style.display = 'block';
+        }
+
+        // Presentatie beëindigen
+        function endPresentation() {
+            document.getElementById('presentationMode').style.display = 'none';
+        }
+
+        // Export naar Excel
+        function exportToExcel() {
+            const category = document.getElementById('resultsCategory').value;
+            if (!category) {
+                alert('Selecteer eerst een categorie');
+                return;
+            }
+
+            const results = calculateResults(category);
+            const criteria = appData.criteria[category] || [];
+            
+            let csvContent = "data:text/csv;charset=utf-8,";
+            
+            // Header
+            csvContent += "Positie,Deelnemer,Totaal Score,Aantal Jury";
+            criteria.forEach(criterium => {
+                csvContent += `,${criterium.name} (${criterium.weight}%)`;
+            });
+            csvContent += ",Beschrijving\n";
+
+            // Data
+            results.forEach((result, index) => {
+                csvContent += `${index + 1},"${result.name}",${result.totalScore.toFixed(2)},${result.juryCount}`;
+                criteria.forEach(criterium => {
+                    const score = result.criteriaAverages[criterium.name] || 0;
+                    csvContent += `,${score.toFixed(2)}`;
+                });
+                csvContent += `,"${result.description || ''}"\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `resultaten_${category}_${new Date().toLocaleDateString()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Data opslaan (localStorage)
+        function saveData() {
+            localStorage.setItem('lampionnenData', JSON.stringify(appData));
+        }
+
+        // Data laden
+        function loadData() {
+            const saved = localStorage.getItem('lampionnenData');
+            if (saved) {
+                const savedData = JSON.parse(saved);
+                appData = {...appData, ...savedData};
+                
+                // Zorg ervoor dat alle nodige properties bestaan
+                appData.categories.forEach(category => {
+                    if (!appData.criteria[category]) appData.criteria[category] = [];
+                    if (!appData.awards[category]) appData.awards[category] = {};
+                });
+            }
+            displayCategories();
+            displayParticipants();
+        }
+
+        // Modal functies
+        function closeModal() {
+            document.getElementById('qrModal').style.display = 'none';
+        }
+
+        // URL parameter controle voor jury toegang
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const juryCategory = urlParams.get('jury');
+            
+            if (juryCategory) {
+                // Automatisch inloggen als jury
+                document.getElementById('userType').value = 'jury';
+                document.getElementById('password').value = 'jury123';
+                login();
+                
+                // Selecteer automatisch de categorie
+                setTimeout(() => {
+                    const categorySelect = document.getElementById('judgingCategory');
+                    if (categorySelect) {
+                        categorySelect.value = juryCategory;
+                        loadParticipantsForJudging();
+                    }
+                }, 100);
+            }
+        };
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // ESC om presentatie te beëindigen
+            if (e.key === 'Escape') {
+                endPresentation();
+            }
+        });
+    </script>
+</body>
+</html>
